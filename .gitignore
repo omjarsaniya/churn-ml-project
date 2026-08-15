@@ -1,13 +1,19 @@
 # Virtual environment
 venv/
+.venv/
 
 # Python cache
 __pycache__/
 *.pyc
+.pytest_cache/
 
-# Model files
+# Model files (large, regenerable via `python src/train.py` — not committed)
 models/
 *.pkl
+
+# Note: reports/ is intentionally NOT ignored — the precision-recall curve
+# PNG it contains is embedded in README.md and needs to be committed for
+# GitHub to render it.
 
 # Jupyter
 .ipynb_checkpoints/

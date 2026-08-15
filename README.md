@@ -7,7 +7,7 @@ raw data to a deployable REST API: cleaning, imbalance-aware model
 comparison, threshold tuning justified by a precision-recall curve, and a
 tested FastAPI service.
 
-**Live demo:** _[add Render URL here after deploying — see Deployment section]_
+**Live demo:** https://churn-ml-project-pu8t.onrender.com/docs
 
 ---
 

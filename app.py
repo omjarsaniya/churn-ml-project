@@ -1,7 +1,22 @@
-from fastapi import FastAPI
+import sys
+from pathlib import Path
+
+# allow importing from src/ regardless of where uvicorn is launched from
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+
 import joblib
 import pandas as pd
+from fastapi import FastAPI
 from pydantic import BaseModel
+
+from paths import PIPELINE_PATH
+
+# Chosen by maximizing F2-score on the precision-recall curve in src/train.py
+# (F2 weights recall 2x precision, matching the business cost of a missed churner).
+# Re-run `python src/train.py` and check reports/precision_recall_curve.png if the
+# model is retrained on new data — this value may shift.
+CLASSIFICATION_THRESHOLD = 0.26
+
 
 class CustomerData(BaseModel):
     gender: str
@@ -24,10 +39,10 @@ class CustomerData(BaseModel):
     MonthlyCharges: float
     TotalCharges: float
 
-app = FastAPI()
 
-# load trained pipeline
-pipeline = joblib.load("models/pipeline.pkl")
+app = FastAPI(title="Customer Churn Prediction API")
+
+pipeline = joblib.load(PIPELINE_PATH)
 
 
 @app.get("/")
@@ -37,15 +52,13 @@ def home():
 
 @app.post("/predict")
 def predict(data: CustomerData):
-    df = pd.DataFrame([data.dict()])
+    df = pd.DataFrame([data.model_dump()])
 
-    prob = pipeline.predict_proba(df)[0][1]
-
-    threshold = 0.3
-    prediction = int(prob > threshold)
+    prob = float(pipeline.predict_proba(df)[0][1])
+    prediction = int(prob >= CLASSIFICATION_THRESHOLD)
 
     return {
-        "prediction": int(prediction),
-        "churn_probability": float(prob), 
-        "threshold_used": float(threshold)
+        "prediction": prediction,
+        "churn_probability": round(prob, 4),
+        "threshold_used": CLASSIFICATION_THRESHOLD,
     }

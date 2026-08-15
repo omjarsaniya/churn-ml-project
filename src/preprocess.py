@@ -11,10 +11,6 @@ def clean_data(df):
     
     return df
 
-def encode_data(df):
-    df = pd.get_dummies(df, drop_first=True)
-    return df
-
 def split_data(df):
     X = df.drop("Churn", axis=1)
     y = df["Churn"].map({"Yes": 1, "No": 0})

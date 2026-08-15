@@ -1,9 +1,18 @@
+"""
+Quick manual sanity-check for the trained pipeline.
+
+Run from anywhere:
+    python src/predict.py
+"""
+
 import joblib
 import pandas as pd
 
-pipeline = joblib.load("../models/pipeline.pkl")
+from paths import PIPELINE_PATH
 
-data = {
+pipeline = joblib.load(PIPELINE_PATH)
+
+sample = {
     "gender": ["Male"],
     "SeniorCitizen": [0],
     "Partner": ["Yes"],
@@ -22,11 +31,11 @@ data = {
     "PaperlessBilling": ["Yes"],
     "PaymentMethod": ["Electronic check"],
     "MonthlyCharges": [70],
-    "TotalCharges": [840]
+    "TotalCharges": [840],
 }
 
-df = pd.DataFrame(data)
-
-prediction = pipeline.predict(df)
-
-print("Prediction:", prediction)
+if __name__ == "__main__":
+    df = pd.DataFrame(sample)
+    prediction = pipeline.predict(df)
+    probability = pipeline.predict_proba(df)[0][1]
+    print("Prediction:", prediction[0], "| Churn probability:", round(probability, 3))

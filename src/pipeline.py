@@ -5,8 +5,8 @@ from xgboost import XGBClassifier
 
 def create_pipeline(X):
 
-    categorical_cols = X.select_dtypes(include=["object"]).columns
-    numerical_cols = X.select_dtypes(exclude=["object"]).columns
+    categorical_cols = X.select_dtypes(include=["object", "str"]).columns
+    numerical_cols = X.select_dtypes(exclude=["object", "str"]).columns
 
     preprocessor = ColumnTransformer(
         transformers=[
